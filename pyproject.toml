@@ -1,0 +1,21 @@
+[project]
+name = "take_break"
+version = "0.1.0"
+description = "Application for enforcing regular breaks during computer work"
+authors = []
+dependencies = [
+    "pywin32>=306",
+    "loguru>=0.7.2",
+    "pyqt6>=6.6.1",
+    "keyboard>=0.13.5",
+    "pillow>=10.2.0",
+]
+requires-python = ">=3.9"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
