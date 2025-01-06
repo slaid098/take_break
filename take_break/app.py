@@ -199,6 +199,7 @@ class TakeBreakApp:
         self.blocker.unblock()  # Unblock input when break ends
         self.overlay.hide()
         self.timer_widget.hide()
+        self.timer_widget.reset_style()  # Сбрасываем стиль таймера
         self.timer.stop()
         self.show_initial_overlay()  # Show initial overlay again
         logger.info("Break ended")

@@ -22,6 +22,17 @@ class TimerWidget(QWidget):
         # Настройка интерфейса
         layout = QVBoxLayout()
         self.time_label = QLabel()
+        self.reset_style()
+        layout.addWidget(self.time_label)
+        self.setLayout(layout)
+
+        # Устанавливаем размер и позицию
+        self.resize(150, 50)
+        screen = self.screen().geometry()
+        self.move(screen.width() - 170, 20)
+
+    def reset_style(self) -> None:
+        """Сброс стиля к исходному состоянию."""
         self.time_label.setStyleSheet("""
             QLabel {
                 color: white;
@@ -32,13 +43,6 @@ class TimerWidget(QWidget):
                 border-radius: 5px;
             }
         """)
-        layout.addWidget(self.time_label)
-        self.setLayout(layout)
-
-        # Устанавливаем размер и позицию
-        self.resize(150, 50)
-        screen = self.screen().geometry()
-        self.move(screen.width() - 170, 20)
 
     def update_time(self, remaining: timedelta) -> None:
         """Обновление отображаемого времени."""
@@ -57,5 +61,7 @@ class TimerWidget(QWidget):
                     border-radius: 5px;
                 }
             """)
+        else:
+            self.reset_style()
 
         self.time_label.setText(f"{minutes:02d}:{seconds:02d}")
