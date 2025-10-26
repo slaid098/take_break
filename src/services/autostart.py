@@ -7,19 +7,19 @@ from pathlib import Path
 from loguru import logger
 
 
-def get_exe_path() -> str:
-    """Get the path to the executable.
+def get_exe_path() -> str | None:
+    """Get the path to the executable if running as compiled exe.
 
     Returns:
-        The absolute path to the running executable.
+        The absolute path to the .exe file, or None if running from Python script.
 
     """
-    # For development: use sys.executable (Python interpreter)
-    # For production: use sys.executable (will be the exe path)
-    exe_path = Path(sys.executable)
+    # Check if running as compiled executable (PyInstaller sets sys.frozen)
+    if not getattr(sys, "frozen", False):
+        return None
 
-    # Ensure it's absolute
-    return str(exe_path.resolve())
+    # sys.executable will be the .exe path when frozen
+    return str(Path(sys.executable).resolve())
 
 
 def is_autostart_enabled() -> bool:
