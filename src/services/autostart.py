@@ -51,8 +51,14 @@ def enable_autostart() -> None:
     r"""Enable autostart by adding TakeBreak to Windows registry.
 
     Adds an entry to HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
-    that runs the application executable.
+    that runs the application executable. Only works when running as compiled .exe.
     """
+    exe_path = get_exe_path()
+
+    if exe_path is None:
+        logger.warning("Автозагрузка доступна только для скомпилированного приложения")
+        return
+
     try:
         key = winreg.OpenKey(
             winreg.HKEY_CURRENT_USER,
@@ -61,7 +67,6 @@ def enable_autostart() -> None:
             winreg.KEY_SET_VALUE,
         )
         try:
-            exe_path = get_exe_path()
             winreg.SetValueEx(key, "TakeBreak", 0, winreg.REG_SZ, exe_path)
             logger.info("Autostart enabled")
         finally:

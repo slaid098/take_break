@@ -1,10 +1,27 @@
 """Module for application settings."""
 
+import sys
 from pathlib import Path
+
+
+def get_base_dir() -> Path:
+    """Get the base directory of the application.
+
+    Returns:
+        For compiled .exe: directory where .exe is located.
+        For Python script: project root directory.
+
+    """
+    if getattr(sys, "frozen", False):
+        # Running as compiled .exe - use .exe location
+        return Path(sys.executable).parent
+
+    # Running as script - use project root (3 levels up from this file)
+    return Path(__file__).parent.parent.parent
 
 # --- Paths ---
 APP_NAME = "TakeBreak"
-APP_DATA_DIR = Path("app_data")
+APP_DATA_DIR = get_base_dir() / "app_data"
 LOGS_DIR = APP_DATA_DIR / "logs"
 WALLPAPERS_DIR = APP_DATA_DIR / "wallpapers"
 CACHE_DIR = APP_DATA_DIR / "cache"
