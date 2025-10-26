@@ -1,22 +1,35 @@
 """Точка входа в приложение Take Break."""
 
 import sys
-from pathlib import Path
 
-# Добавляем путь к пакету в PYTHONPATH
-sys.path.append(str(Path(__file__).parent))
+from loguru import logger
 
-from take_break.__main__ import setup_logger
-from take_break.app import TakeBreakApp
+from src.app import App
+from src.config.logging import setup_logger
+from src.config.settings import ensure_dirs_exist
 
 
 def main() -> None:
-    """Точка входа в приложение."""
+    """Run the Take Break application.
+
+    Initializes the logger, creates an application instance, runs the
+    main loop, and handles graceful shutdown on KeyboardInterrupt
+    or unexpected errors.
+    """
+    ensure_dirs_exist()
     setup_logger()
-    app = TakeBreakApp()
+    logger.info("Запуск приложения Take Break")
+
+    app = App()
     try:
         app.run()
     except KeyboardInterrupt:
+        logger.info("Приложение остановлено пользователем")
+        app.quit()
+    except Exception as e:
+        logger.exception(f"Неожиданная ошибка: {e}")
+    finally:
+        logger.info("Завершение работы приложения")
         sys.exit(0)
 
 

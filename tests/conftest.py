@@ -1,13 +1,11 @@
-"""Конфигурация для тестов."""
+"""Pytest configuration and fixtures."""
 
-import sys
 from pathlib import Path
 
-# Добавляем путь к пакету в PYTHONPATH
-sys.path.append(str(Path(__file__).parent.parent))
+import pytest
 
-# Отключаем логирование во время тестов
-from loguru import logger
 
-logger.remove()  # Удаляем все обработчики
-logger.add(sys.stderr, level="ERROR")  # Добавляем только критические ошибки
+@pytest.fixture
+def temp_settings_dir(tmp_path: Path) -> Path:
+    """Temporary directory for settings tests."""
+    return tmp_path / "settings"

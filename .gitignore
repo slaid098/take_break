@@ -39,3 +39,4 @@ ENV/
 # Distribution
 dist/
 build/
+*.json
