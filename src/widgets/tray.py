@@ -28,7 +28,7 @@ class SystemTray(QSystemTrayIcon):
         super().__init__(parent)
 
         # Load icon
-        icon_path = Files.ICON_PATH
+        icon_path = Files.LOGO_PATH
         if icon_path.exists():
             self.setIcon(QIcon(str(icon_path)))
         else:

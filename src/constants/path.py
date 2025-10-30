@@ -29,7 +29,7 @@ class Directories:
     LOGS_DIR = APP_DATA_DIR / "logs"
     WALLPAPERS_DIR = APP_DATA_DIR / "wallpapers"
     CACHE_DIR = APP_DATA_DIR / "cache"
-    ICON_DIR = APP_DATA_DIR / "icon"
+    LOGO_DIR = APP_DATA_DIR / "icon"
     SETTINGS_DIR = APP_DATA_DIR / "settings"
 
     @property
@@ -60,7 +60,7 @@ class Directories:
 class Files:
     """Files for the application."""
 
-    ICON_PATH = Directories.ICON_DIR / "icon.ico"
+    LOGO_PATH = Directories.LOGO_DIR / "icon.ico"
     SETTINGS_DB_PATH = Directories.SETTINGS_DIR / "settings.db"
     WALLPAPER_CACHE_PATH = Directories.CACHE_DIR / "wallpaper_cache.jpg"
     LOG_PATH = Directories.LOGS_DIR / "log.log"

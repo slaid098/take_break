@@ -1,52 +1,64 @@
-# Take Break
+<div align="center">
+  <img src="https://github.com/slaid098/take_break/blob/main/images/logo.png?raw=true" alt="Take Break Logo" width="100"/>
+  <h1>Take Break</h1>
+  <p><strong>A simple, unskippable break timer to protect your health and keep your focus.</strong></p>
+  <p><i>Discipline in work, freedom in rest.</i></p>
+  <p><a href="https://github.com/slaid098/take_break/releases"><strong>Download Latest Version for Windows</strong></a></p>
+</div>
 
-Приложение для принудительного прерывания работы за компьютером через заданные интервалы времени.
+---
 
-## Описание
+![Take Break Demo](https://github.com/slaid098/take_break/blob/main/images/demo.gif?raw=true)
+*The core loop: Welcome → Work → Unskippable Break → Refocus.*
 
-Take Break помогает контролировать время, проведенное за компьютером, принудительно блокируя ввод с клавиатуры и мыши через заданные интервалы времени. Это помогает:
+---
 
-- Сохранить здоровье глаз
-- Предотвратить проблемы с осанкой
-- Снизить риск развития туннельного синдрома
-- Поддерживать продуктивность на высоком уровне
+## Features
 
-## Особенности
+-   Set a key focus for your next work session.
+-   **Work for a fixed time, but rest as long as you need.**
+-   Enjoy new background wallpapers during every break.
+-   You can only exit the application during a work session.
+-   Two modes: 45 min (Deep Work) or 25 min (Pomodoro).
+-   A clean, fullscreen overlay that blocks distractions.
 
-- Настраиваемый интервал рабочего времени (25-60 минут)
-- Принудительные 5-минутные перерывы
-- Полная блокировка ввода во время перерыва
-- Уведомления за минуту до блокировки
-- Управление через системный трей
-- Невозможность прервать перерыв
+## Install & Run
 
-## Установка
+This application is **portable** and does not require installation.
 
-1. Убедитесь, что у вас установлен Python 3.9 или выше
-2. Установите зависимости:
-```bash
-uv pip install .
-```
+1.  Go to the [**Releases**](https://github.com/slaid098/take_break/releases) page.
+2.  Download the `take_break_vX.X.zip` (or the latest version).
+3.  Unzip the folder to any convenient location.
+4.  Run `take_break.exe` to start the application.
 
-## Использование
+<details>
+<summary><strong>Running from Source (for Developers)</strong></summary>
 
-1. Запустите приложение:
-```bash
-python -m take_break
-```
+This project is managed with [uv](https://github.com/astral-sh/uv).
 
-2. Используйте иконку в системном трее для управления:
-   - Ctrl+Alt+S - начать рабочий таймер
-   - Правый клик по иконке - меню с опциями
+**Prerequisites:**
+- Python 3.13+
+- `uv` installed
 
-## Требования
+**Steps:**
 
-- Windows 10/11
-- Python 3.9+
-- pywin32
-- PyQt6
-- loguru
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/slaid098/take_break
+    cd take_break
+    ```
 
-## Лицензия
+2.  **Sync environment & install dependencies:**
+    ```bash
+    uv sync
+    ```
 
-MIT
+3.  **Run the application:**
+    ```bash
+    uv run python main.py
+    ```
+</details>
+
+## License
+
+[MIT](LICENSE) © 2024-2025 slaid098

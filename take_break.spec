@@ -86,7 +86,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='app_data/icon/icon.ico',
+    icon='app_data/logo/logo.ico',
 )
 
 # Фильтровать .qm файлы (переводы)
