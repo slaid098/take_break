@@ -3,6 +3,9 @@
   <h1>Take Break</h1>
   <p><strong>A simple, unskippable break timer to protect your health and keep your focus.</strong></p>
   <p><i>Discipline in work, freedom in rest.</i></p>
+  <p>
+    <img src="https://img.shields.io/badge/OS-Windows-blue" alt="Windows OS">
+  </p>
   <p><a href="https://github.com/slaid098/take_break/releases"><strong>Download Latest Version for Windows</strong></a></p>
 </div>
 
