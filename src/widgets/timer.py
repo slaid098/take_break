@@ -6,7 +6,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPainter, QPaintEvent
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from src.config import settings
+from src.constants.settings import RED_SECOND_THRESHOLD
 from src.utils.time import format_time
 from src.widgets.styles import (
     TIMER_FOCUS_STYLE,
@@ -115,7 +115,7 @@ class TimerWidget(QWidget):
 
         """
         # Color in red if less than a minute remains
-        if remaining.total_seconds() <= settings.RED_SECOND_THRESHOLD:
+        if remaining.total_seconds() <= RED_SECOND_THRESHOLD:
             self._paint_it_red()
         else:
             # Update only time style, keep focus visible

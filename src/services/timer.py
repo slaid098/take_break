@@ -4,7 +4,7 @@ from datetime import UTC, datetime, timedelta
 
 from loguru import logger
 
-from src.config import settings
+from src.constants.settings import BREAK_DURATION_MIN, DEFAULT_WORK_DURATION_MIN
 
 
 class TimerManager:
@@ -12,8 +12,8 @@ class TimerManager:
 
     def __init__(self) -> None:
         """Initialize the timer manager."""
-        self.work_duration: int = settings.DEFAULT_WORK_DURATION_MIN
-        self.break_duration: int = settings.BREAK_DURATION_MIN
+        self.work_duration: int = DEFAULT_WORK_DURATION_MIN
+        self.break_duration: int = BREAK_DURATION_MIN
         self.work_end_time: datetime | None = None
         self.break_end_time: datetime | None = None
 
@@ -46,6 +46,7 @@ class TimerManager:
 
         Returns:
             Remaining time as timedelta, or None if work timer is not active.
+
         """
         if self.work_end_time is None:
             return None
@@ -56,6 +57,7 @@ class TimerManager:
 
         Returns:
             Remaining time as timedelta, or None if break timer is not active.
+
         """
         if self.break_end_time is None:
             return None
@@ -66,6 +68,7 @@ class TimerManager:
 
         Returns:
             True if work timer is active, False otherwise.
+
         """
         return self.work_end_time is not None
 
@@ -74,6 +77,7 @@ class TimerManager:
 
         Returns:
             True if break timer is active, False otherwise.
+
         """
         return self.break_end_time is not None
 
@@ -82,6 +86,7 @@ class TimerManager:
 
         Returns:
             True if work timer is expired, False otherwise.
+
         """
         if self.work_end_time is None:
             return False
@@ -92,6 +97,7 @@ class TimerManager:
 
         Returns:
             True if break timer is expired, False otherwise.
+
         """
         if self.break_end_time is None:
             return False

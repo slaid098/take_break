@@ -2,7 +2,7 @@
 
 from pytestqt.qtbot import QtBot
 
-from src.config import settings
+from src.constants.settings import POMODORO_MODE_MIN, STANDARD_MODE_MIN
 from src.widgets.welcome import WelcomeDialog
 
 
@@ -35,7 +35,7 @@ def test_welcome_dialog_default_selection(qtbot: QtBot) -> None:
     qtbot.addWidget(dialog)
 
     selected_duration = dialog.get_selected_work_duration()
-    assert selected_duration == settings.STANDARD_MODE_MIN
+    assert selected_duration == STANDARD_MODE_MIN
 
 
 def test_welcome_dialog_select_25_minutes(qtbot: QtBot) -> None:
@@ -47,7 +47,7 @@ def test_welcome_dialog_select_25_minutes(qtbot: QtBot) -> None:
     dialog.radio_25.setChecked(True)
 
     selected_duration = dialog.get_selected_work_duration()
-    assert selected_duration == settings.POMODORO_MODE_MIN
+    assert selected_duration == POMODORO_MODE_MIN
 
 
 def test_welcome_dialog_select_45_minutes(qtbot: QtBot) -> None:
@@ -59,7 +59,7 @@ def test_welcome_dialog_select_45_minutes(qtbot: QtBot) -> None:
     dialog.radio_45.setChecked(True)
 
     selected_duration = dialog.get_selected_work_duration()
-    assert selected_duration == settings.STANDARD_MODE_MIN
+    assert selected_duration == STANDARD_MODE_MIN
 
 
 def test_welcome_dialog_button_group(qtbot: QtBot) -> None:
@@ -78,13 +78,13 @@ def test_welcome_dialog_switching_between_modes(qtbot: QtBot) -> None:
     qtbot.addWidget(dialog)
 
     # Start with 45 minutes (default)
-    assert dialog.get_selected_work_duration() == settings.STANDARD_MODE_MIN
+    assert dialog.get_selected_work_duration() == STANDARD_MODE_MIN
 
     # Switch to 25 minutes
     dialog.radio_25.setChecked(True)
-    assert dialog.get_selected_work_duration() == settings.POMODORO_MODE_MIN
+    assert dialog.get_selected_work_duration() == POMODORO_MODE_MIN
 
     # Switch back to 45 minutes
     dialog.radio_45.setChecked(True)
-    assert dialog.get_selected_work_duration() == settings.STANDARD_MODE_MIN
+    assert dialog.get_selected_work_duration() == STANDARD_MODE_MIN
 

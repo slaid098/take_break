@@ -6,7 +6,8 @@ from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QCloseEvent, QKeyEvent, QPainter, QPaintEvent, QShowEvent
 from PySide6.QtWidgets import QLabel, QLineEdit, QVBoxLayout, QWidget
 
-from src.config import settings, texts
+from src.config import texts
+from src.constants.settings import MAX_FOCUS_LENGTH
 from src.services.wallpaper import WallpaperManager
 from src.utils.time import format_time
 from src.widgets.background import paint_background
@@ -27,15 +28,22 @@ class BlockingOverlay(QWidget):
 
     close_requested = Signal()
 
-    def __init__(self) -> None:
+    def __init__(self, screen_width: int, screen_height: int) -> None:
         """Initialize the overlay window.
 
         Sets up the window's appearance, wallpaper manager, UI elements,
         and internal state.
+
+        Args:
+            screen_width: The width of the screen.
+            screen_height: The height of the screen.
+
         """
         super().__init__()
-        self._setup_window_config()
+        self._screen_width = screen_width
+        self._screen_height = screen_height
         self._setup_wallpaper_manager()
+        self._setup_window_config()
         self._create_ui_elements()
         self._setup_layout()
         self.is_blocking = False
@@ -49,15 +57,18 @@ class BlockingOverlay(QWidget):
         for custom rounded corners or other non-rectangular shapes if needed.
         """
         self.setWindowFlags(
-            Qt.WindowType.Tool |
-            Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint,
+            Qt.WindowType.Tool
+            | Qt.WindowType.FramelessWindowHint
+            | Qt.WindowType.WindowStaysOnTopHint,
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
     def _setup_wallpaper_manager(self) -> None:
         """Initialize the wallpaper manager."""
-        self.wallpaper_manager = WallpaperManager()
-        self._current_wallpaper = None
+        self.wallpaper_manager = WallpaperManager(
+            width=self._screen_width,
+            height=self._screen_height,
+        )
 
     def _create_ui_elements(self) -> None:
         """Create all UI elements for the overlay."""
@@ -76,13 +87,13 @@ class BlockingOverlay(QWidget):
         """Create the focus input field."""
         self.focus_input = QLineEdit()
         self.focus_input.setPlaceholderText(texts.Overlay.PLACEHOLDER)
-        self.focus_input.setMaxLength(settings.MAX_FOCUS_LENGTH)
+        self.focus_input.setMaxLength(MAX_FOCUS_LENGTH)
         self.focus_input.setStyleSheet(OVERLAY_INPUT_STYLE)
         self.focus_input.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         font_metrics = self.focus_input.fontMetrics()
         char_width = font_metrics.horizontalAdvance("M")
-        text_width = char_width * (settings.MAX_FOCUS_LENGTH + 2)
+        text_width = char_width * (MAX_FOCUS_LENGTH + 2)
         total_width = text_width + 24 + 4 + 40  # Padding + Border + Margin
         self.focus_input.setFixedWidth(total_width)
 
@@ -146,7 +157,7 @@ class BlockingOverlay(QWidget):
             event: The QShowEvent object.
 
         """
-        self._current_wallpaper = self.wallpaper_manager.get_random_wallpaper()
+        self._current_wallpaper = self.wallpaper_manager.get_wallpaper()
         super().showEvent(event)
         self.update()  # Trigger a repaint with the new wallpaper
 

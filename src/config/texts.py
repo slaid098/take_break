@@ -1,6 +1,6 @@
 """Text constants for all application messages and UI elements."""
 
-from src.config import settings
+from src.constants.settings import BREAK_DURATION_MIN, DEFAULT_WORK_DURATION_MIN
 
 
 class AppInfo:
@@ -13,7 +13,7 @@ class WelcomeDialog:
     """Welcome dialog texts."""
 
     TITLE = "Добро пожаловать в Take Break!"
-    SUBTITLE = "Защита здоровья при работе за компьютером"
+    SUBTITLE = "Защита здоровья и сохранения фокуса при работе за компьютером"
     BUTTON_START = "Начать работу"
     BUTTON_CANCEL = "Отмена"
     CHECKBOX_ONLINE = "Загружать случайные обои из интернета"
@@ -31,22 +31,28 @@ class WelcomeDialogTexts:
 
         """
         return """
-        <div style='background-color: white; padding: 20px; border-radius: 8px;'>
-            <p style='font-size: 15px; line-height: 1.8; margin: 0; color: #34495e;'>
+        <div style='background-color: white; padding: 20px; border-radius: 8px; box-sizing: border-box;'>
+            <p style='font-size: 15px; line-height: 1.8; margin: 0 0 10px 0; color: #34495e;'>
                 <b style='color: #2c3e50; font-size: 16px;'>
-                    Дисциплина в работе, свобода в отдыхе
+                    Ключевые принципы Take Break:
                 </b>
             </p>
-            <p style='font-size: 14px; line-height: 1.8; margin-top: 12px; color: #34495e;'>
-                Take Break бережно защищает вас от непрерывной работы:
-            </p>
-            <ul style='font-size: 14px; line-height: 2; color: #34495e; margin-top: 10px;'>
-                <li>Перерывы нельзя пропустить</li>
-                <li>После обязательных 5 минут вы сами решаете, когда вернуться</li>
-                <li>Выход из приложения доступен только во время работы</li>
+            <ul style='font-size: 14px; color: #34495e; margin: 0; padding: 0 0 0 20px; list-style-type: disc; line-height: 1.5;'>
+                <li style='margin: 0 0 10px 0; padding: 0; line-height: 1;'>
+                    <b>Определяйте фокус:</b> Устанавливайте ключевую задачу на следующую сессию, чтобы возвращаться к работе было легко.
+                </li>
+                <li style='margin: 0 0 10px 0; padding: 0; line-height: 1;'>
+                    <b>Работайте строго, отдыхайте свободно:</b> Таймер работы неотвратим, но после обязательного 5-минутного перерыва он будет ждать вашего возвращения.
+                </li>
+                <li style='margin: 0 0 10px 0; padding: 0; line-height: 1;'>
+                    <b>Отдыхайте красиво:</b> Наслаждайтесь новыми фоновыми заставками во время каждого перерыва.
+                </li>
+                <li style='margin: 0; padding: 0; line-height: 1;'>
+                    <b>Вы контролируете ситуацию:</b> Выход из приложения доступен в любой момент до начала перерыва.
+                </li>
             </ul>
         </div>
-        """
+        """  # noqa: E501
 
     @property
     def checkbox_online(self) -> str:
@@ -66,7 +72,8 @@ class Overlay:
 
     @staticmethod
     def get_initial_text(
-        previous_focus: str | None = None, work_duration: int | None = None,
+        previous_focus: str | None = None,
+        work_duration: int | None = None,
     ) -> str:
         """Get the initial overlay text.
 
@@ -79,10 +86,7 @@ class Overlay:
 
         """
         # If work_duration not provided, use default
-        duration = (
-            work_duration if work_duration is not None
-            else settings.DEFAULT_WORK_DURATION_MIN
-        )
+        duration = work_duration if work_duration is not None else DEFAULT_WORK_DURATION_MIN
         if previous_focus:
             return (
                 f"<div style='text-align: center;'>"
@@ -112,7 +116,7 @@ class Overlay:
             Break message text.
 
         """
-        return f"Break: {settings.BREAK_DURATION_MIN} minutes"
+        return f"Break: {BREAK_DURATION_MIN} minutes"
 
 
 class WorkModes:

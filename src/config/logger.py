@@ -2,12 +2,12 @@
 
 from loguru import logger
 
-from . import settings
+from src.constants.path import Files
 
 
 def setup_logger() -> None:
     """Set up the application logger."""
-    log_path = settings.LOGS_DIR / "log.log"
+    log_path = Files.LOG_PATH
     logger.add(
         log_path,
         rotation="1 week",

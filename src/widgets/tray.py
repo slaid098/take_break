@@ -4,7 +4,9 @@ from PySide6.QtCore import QObject, Qt, Signal
 from PySide6.QtGui import QActionGroup, QIcon, QPixmap
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 
-from src.config import settings, texts
+from src.config import texts
+from src.constants.path import Files
+from src.constants.settings import MOVE_TIMER_HOTKEY, POMODORO_MODE_MIN, STANDARD_MODE_MIN
 
 
 class SystemTray(QSystemTrayIcon):
@@ -26,7 +28,7 @@ class SystemTray(QSystemTrayIcon):
         super().__init__(parent)
 
         # Load icon
-        icon_path = settings.ICON_PATH
+        icon_path = Files.ICON_PATH
         if icon_path.exists():
             self.setIcon(QIcon(str(icon_path)))
         else:
@@ -63,23 +65,23 @@ class SystemTray(QSystemTrayIcon):
 
         # Pomodoro mode
         self.mode_25_action = work_mode_menu.addAction(
-            f"🚀 {settings.POMODORO_MODE_MIN} минут (Pomodoro)",
+            f"🚀 {POMODORO_MODE_MIN} минут (Pomodoro)",
         )
         self.mode_25_action.setCheckable(True)
-        self.mode_25_action.setData(settings.POMODORO_MODE_MIN)
+        self.mode_25_action.setData(POMODORO_MODE_MIN)
         self.mode_25_action.triggered.connect(
-            lambda: self._on_work_mode_changed(settings.POMODORO_MODE_MIN),
+            lambda: self._on_work_mode_changed(POMODORO_MODE_MIN),
         )
         self.work_mode_group.addAction(self.mode_25_action)
 
         # Standard mode
         self.mode_45_action = work_mode_menu.addAction(
-            f"⏳ {settings.STANDARD_MODE_MIN} минут (Стандартный)",
+            f"⏳ {STANDARD_MODE_MIN} минут (Стандартный)",
         )
         self.mode_45_action.setCheckable(True)
-        self.mode_45_action.setData(settings.STANDARD_MODE_MIN)
+        self.mode_45_action.setData(STANDARD_MODE_MIN)
         self.mode_45_action.triggered.connect(
-            lambda: self._on_work_mode_changed(settings.STANDARD_MODE_MIN),
+            lambda: self._on_work_mode_changed(STANDARD_MODE_MIN),
         )
         self.work_mode_group.addAction(self.mode_45_action)
 
@@ -87,7 +89,7 @@ class SystemTray(QSystemTrayIcon):
 
         # Move timer action (with hotkey display)
         move_timer_action = menu.addAction(
-            f"⚙️ {texts.Tray.MENU_MOVE_TIMER} ({settings.MOVE_TIMER_HOTKEY.upper()})",
+            f"⚙️ {texts.Tray.MENU_MOVE_TIMER} ({MOVE_TIMER_HOTKEY.upper()})",
         )
         move_timer_action.triggered.connect(self._on_move_timer_requested)
 
@@ -198,7 +200,7 @@ class SystemTray(QSystemTrayIcon):
             duration: Work duration in minutes (25 or 45).
 
         """
-        if duration == settings.POMODORO_MODE_MIN:
+        if duration == POMODORO_MODE_MIN:
             self.mode_25_action.setChecked(True)
-        elif duration == settings.STANDARD_MODE_MIN:
+        elif duration == STANDARD_MODE_MIN:
             self.mode_45_action.setChecked(True)

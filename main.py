@@ -5,8 +5,8 @@ import sys
 from loguru import logger
 
 from src.app import App
-from src.config.logging import setup_logger
-from src.config.settings import ensure_dirs_exist
+from src.config.logger import setup_logger
+from src.constants.path import Directories
 
 
 def main() -> None:
@@ -16,7 +16,7 @@ def main() -> None:
     main loop, and handles graceful shutdown on KeyboardInterrupt
     or unexpected errors.
     """
-    ensure_dirs_exist()
+    Directories().make_dirs()
     setup_logger()
     logger.info("Запуск приложения Take Break")
 

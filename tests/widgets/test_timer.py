@@ -5,7 +5,7 @@ from datetime import timedelta
 from PySide6.QtCore import Qt
 from pytestqt.qtbot import QtBot
 
-from src.config import settings
+from src.constants.settings import MAX_FOCUS_LENGTH, RED_SECOND_THRESHOLD
 from src.widgets.styles import TIMER_TIME_RED_STYLE
 from src.widgets.timer import TimerWidget
 
@@ -37,7 +37,7 @@ def test_update_time_turns_red_under_threshold(qtbot: QtBot) -> None:
     widget = TimerWidget()
     qtbot.addWidget(widget)
 
-    widget.update_time(timedelta(seconds=settings.RED_SECOND_THRESHOLD - 1))
+    widget.update_time(timedelta(seconds=RED_SECOND_THRESHOLD - 1))
 
     assert TIMER_TIME_RED_STYLE in widget.time_label.styleSheet()
 
@@ -86,7 +86,7 @@ def test_timer_size_based_on_max_focus_length(qtbot: QtBot) -> None:
     widget.show()
 
     # Set focus with MAX_FOCUS_LENGTH characters
-    max_focus = "A" * settings.MAX_FOCUS_LENGTH
+    max_focus = "A" * MAX_FOCUS_LENGTH
     widget.set_focus_text(max_focus)
 
     # Focus label should be fully visible within widget bounds

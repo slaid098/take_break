@@ -40,3 +40,6 @@ ENV/
 dist/
 build/
 *.json
+*.db
+*.db-shm
+*.db-wal

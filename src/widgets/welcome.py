@@ -12,8 +12,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from src.config import settings, texts
+from src.config import texts
 from src.config.texts import WelcomeDialogTexts
+from src.constants.settings import POMODORO_MODE_MIN, STANDARD_MODE_MIN
 from src.widgets.styles import (
     WELCOME_BUTTONS_STYLE,
     WELCOME_DESCRIPTION_STYLE,
@@ -39,7 +40,7 @@ class WelcomeDialog(QDialog):
     def _setup_ui(self) -> None:
         """Set up the welcome dialog UI."""
         self.setWindowTitle(texts.AppInfo.TITLE)
-        self.setFixedSize(620, 520)
+        self.setFixedSize(620, 620)
         self.setModal(True)
 
         # Set dialog background
@@ -64,6 +65,7 @@ class WelcomeDialog(QDialog):
         # Description box
         texts_instance = WelcomeDialogTexts()
         description_label = QLabel(texts_instance.description)
+        description_label.setTextFormat(Qt.TextFormat.RichText)
         description_label.setWordWrap(True)
         description_label.setStyleSheet(WELCOME_DESCRIPTION_STYLE)
         layout.addWidget(description_label)
@@ -78,8 +80,12 @@ class WelcomeDialog(QDialog):
         button_box = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel,
         )
-        button_box.button(QDialogButtonBox.StandardButton.Ok).setText(texts.WelcomeDialog.BUTTON_START)
-        button_box.button(QDialogButtonBox.StandardButton.Cancel).setText(texts.WelcomeDialog.BUTTON_CANCEL)
+        button_box.button(QDialogButtonBox.StandardButton.Ok).setText(
+            texts.WelcomeDialog.BUTTON_START,
+        )
+        button_box.button(QDialogButtonBox.StandardButton.Cancel).setText(
+            texts.WelcomeDialog.BUTTON_CANCEL,
+        )
         button_box.setStyleSheet(WELCOME_BUTTONS_STYLE)
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
@@ -109,14 +115,14 @@ class WelcomeDialog(QDialog):
 
         self.work_mode_group = QButtonGroup()
 
-        self.radio_25 = QRadioButton(f"🚀 {settings.POMODORO_MODE_MIN} минут (Pomodoro)")
+        self.radio_25 = QRadioButton(f"🚀 {POMODORO_MODE_MIN} минут (Pomodoro)")
         self.radio_25.setStyleSheet("font-size: 13px;")
-        self.work_mode_group.addButton(self.radio_25, settings.POMODORO_MODE_MIN)
+        self.work_mode_group.addButton(self.radio_25, POMODORO_MODE_MIN)
 
-        self.radio_45 = QRadioButton(f"⏳ {settings.STANDARD_MODE_MIN} минут (Стандартный)")
+        self.radio_45 = QRadioButton(f"⏳ {STANDARD_MODE_MIN} минут (Стандартный)")
         self.radio_45.setStyleSheet("font-size: 13px;")
         self.radio_45.setChecked(True)  # Default
-        self.work_mode_group.addButton(self.radio_45, settings.STANDARD_MODE_MIN)
+        self.work_mode_group.addButton(self.radio_45, STANDARD_MODE_MIN)
 
         radio_layout.addStretch()
         radio_layout.addWidget(self.radio_25)

@@ -1,11 +1,14 @@
 """Pytest configuration and fixtures."""
 
-from pathlib import Path
-
 import pytest
+
+from src.config.settings import Settings
+from src.constants.path import Files
+from src.db.db import Database
 
 
 @pytest.fixture
-def temp_settings_dir(tmp_path: Path) -> Path:
-    """Temporary directory for settings tests."""
-    return tmp_path / "settings"
+def test_settings() -> Settings:
+    """Get test settings instance."""
+    db = Database(db_path=Files.MEMORY_DB_PATH)
+    return Settings(db=db)

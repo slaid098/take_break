@@ -9,14 +9,21 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import QApplication, QDialog
 
-from src.config import settings, texts
+from src.config import texts
+from src.config.settings import Settings
+from src.constants.settings import (
+    BREAK_DURATION_MIN,
+    MOVE_TIMER_HOTKEY,
+    POMODORO_MODE_MIN,
+    TIMER_INTERVAL_MS,
+)
+from src.db.db import Database
 from src.services import autostart
 from src.services.position import (
     WidgetPosition,
     calculate_position,
     get_next_position,
 )
-from src.services.settings_storage import SettingsStorage
 from src.services.timer import TimerManager
 from src.widgets.overlay import BlockingOverlay
 from src.widgets.timer import TimerWidget
@@ -40,13 +47,15 @@ class App:
         """
         logger.debug("Initializing application")
         self.app = QApplication(sys.argv)
+        self.width = self.app.primaryScreen().geometry().width()
+        self.height = self.app.primaryScreen().geometry().height()
 
+        self.overlay = BlockingOverlay(screen_width=self.width, screen_height=self.height)
         # Initialize services
         self.timer_manager = TimerManager()
-        self.settings_storage = SettingsStorage()
+        self.settings = Settings(db=Database())
 
         # Initialize widgets
-        self.overlay = BlockingOverlay()
         self.timer_widget = TimerWidget()
         self.tray = SystemTray()
 
@@ -58,8 +67,8 @@ class App:
         self.timer.timeout.connect(self._on_timer_timeout)
 
         # Load focus and work mode from settings
-        self.focus_text = self.settings_storage.get_focus()
-        self.work_duration = self.settings_storage.get_work_duration()
+        self.focus_text = self.settings.get_focus()
+        self.work_duration = self.settings.get_work_duration()
 
         # Initialize extra rest timer
         self._extra_rest_start: datetime | None = None
@@ -77,20 +86,12 @@ class App:
         self._setup_tray()
 
         # Load and apply online wallpapers setting
-        use_online = self.settings_storage.get_use_online_wallpapers()
+        use_online = self.settings.get_use_online_wallpapers()
         self.overlay.wallpaper_manager.set_use_online(use_online)
         self.tray.set_online_wallpapers_enabled(use_online)
 
-        # Start preloading wallpapers if online mode is enabled
-        if use_online and (screen := self.app.primaryScreen()):
-            screen_geometry = screen.geometry()
-            self.overlay.wallpaper_manager.start_preloading(
-                screen_geometry.width(),
-                screen_geometry.height(),
-            )
-
         # Check for first run and show welcome dialog
-        if self.settings_storage.is_first_run():
+        if self.settings.is_first_run():
             self._show_welcome_dialog()
 
         # Show initial overlay
@@ -104,10 +105,10 @@ class App:
     def _setup_hotkeys(self) -> None:
         """Configure global application hotkeys."""
         # Load hotkey from JSON or save default
-        hotkey = self.settings_storage.get_move_timer_hotkey()
+        hotkey = self.settings.get_move_timer_hotkey()
         if not hotkey:
-            hotkey = settings.MOVE_TIMER_HOTKEY
-            self.settings_storage.set_move_timer_hotkey(hotkey)
+            hotkey = MOVE_TIMER_HOTKEY
+            self.settings.set_move_timer_hotkey(hotkey)
         keyboard.add_hotkey(hotkey, self._move_timer)
 
     def _setup_tray(self) -> None:
@@ -141,11 +142,11 @@ class App:
 
         # Get selected work duration and save it
         selected_duration = dialog.get_selected_work_duration()
-        self.settings_storage.set_work_duration(selected_duration)
+        self.settings.set_work_duration(selected_duration)
         self.work_duration = selected_duration
         self.tray.set_work_mode(selected_duration)
 
-        self.settings_storage.mark_first_run_complete()
+        self.settings.mark_first_run_complete()
         logger.info("Welcome dialog accepted and first run marked")
 
     def _on_autostart_toggle(self, enabled: bool) -> None:
@@ -168,7 +169,7 @@ class App:
             enabled: True to enable online wallpapers, False to use local only.
 
         """
-        self.settings_storage.set_use_online_wallpapers(enabled)
+        self.settings.set_use_online_wallpapers(enabled)
         self.overlay.wallpaper_manager.set_use_online(enabled)
         logger.info(f"Online wallpapers toggled: {enabled}")
 
@@ -180,14 +181,12 @@ class App:
 
         """
         self.work_duration = duration
-        self.settings_storage.set_work_duration(duration)
+        self.settings.set_work_duration(duration)
         self.tray.set_work_mode(duration)
 
         # Show notification
         mode_name = (
-            texts.WorkModes.POMODORO
-            if duration == settings.POMODORO_MODE_MIN
-            else texts.WorkModes.STANDARD
+            texts.WorkModes.POMODORO if duration == POMODORO_MODE_MIN else texts.WorkModes.STANDARD
         )
         message = f"Режим изменён на {duration} мин ({mode_name}). Применится после текущего цикла"
         self.tray.showMessage(
@@ -276,7 +275,7 @@ class App:
 
             self.focus_text = self.overlay.get_focus_text()
             # Save focus to disk
-            self.settings_storage.save_focus(self.focus_text)
+            self.settings.save_focus(self.focus_text)
             self.overlay.hide()
             self.start_work_timer()
             logger.info(f"Work timer started with focus: {self.focus_text}")
@@ -288,7 +287,7 @@ class App:
             return
 
         # Get current work duration from settings (may have changed)
-        self.work_duration = self.settings_storage.get_work_duration()
+        self.work_duration = self.settings.get_work_duration()
 
         # Reset extra rest timer
         self._extra_rest_start = None
@@ -300,7 +299,7 @@ class App:
         # Position after widget is fully rendered in the event loop
         QTimer.singleShot(0, self._reposition_timer)
 
-        self.timer.start(settings.TIMER_INTERVAL_MS)
+        self.timer.start(TIMER_INTERVAL_MS)
         self._update_tray_state()
         logger.info(f"Work timer started for {self.work_duration} minutes")
 
@@ -313,7 +312,7 @@ class App:
         self.overlay.set_text(texts.Overlay().break_message)  # type: ignore[attr-defined]
         self.overlay.show()
         self._update_tray_state()
-        logger.info(f"Break started for {settings.BREAK_DURATION_MIN} minutes")
+        logger.info(f"Break started for {BREAK_DURATION_MIN} minutes")
 
     def _on_timer_timeout(self) -> None:
         """Orchestrate timer updates.
