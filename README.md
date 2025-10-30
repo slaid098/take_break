@@ -9,7 +9,7 @@
 ---
 
 ![Take Break Demo](https://github.com/slaid098/take_break/blob/master/images/demo.gif?raw=true)
-*The core loop: Welcome → Work → Unskippable Break → Refocus.*
+*The core loop: Welcome → Set focus → Work → Unskippable Break → Refocus.*
 
 ---
 
