@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/slaid098/take_break/blob/main/images/logo.png?raw=true" alt="Take Break Logo" width="100"/>
+  <img src="https://github.com/slaid098/take_break/blob/master/images/logo.png?raw=true" alt="Take Break Logo" width="100"/>
   <h1>Take Break</h1>
   <p><strong>A simple, unskippable break timer to protect your health and keep your focus.</strong></p>
   <p><i>Discipline in work, freedom in rest.</i></p>
@@ -8,7 +8,7 @@
 
 ---
 
-![Take Break Demo](https://github.com/slaid098/take_break/blob/main/images/demo.gif?raw=true)
+![Take Break Demo](https://github.com/slaid098/take_break/blob/master/images/demo.gif?raw=true)
 *The core loop: Welcome → Work → Unskippable Break → Refocus.*
 
 ---
