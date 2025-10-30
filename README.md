@@ -28,6 +28,7 @@
 ## Install & Run
 
 This application is **portable** and does not require installation.
+**Currently available for Windows 10 and later.**
 
 1.  Go to the [**Releases**](https://github.com/slaid098/take_break/releases) page.
 2.  Download the `take_break_vX.X.zip` (or the latest version).
