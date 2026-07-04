@@ -16,4 +16,3 @@ def format_time(remaining: timedelta) -> str:
     minutes = int(remaining.total_seconds() // 60)
     seconds = int(remaining.total_seconds() % 60)
     return f"{minutes:02d}:{seconds:02d}"
-

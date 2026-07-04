@@ -4,12 +4,11 @@ from pathlib import Path
 
 from PIL import Image
 from PySide6.QtWidgets import QApplication
-
 from src.constants.settings import PRELOAD_HEIGHT_DEFAULT, PRELOAD_WIDTH_DEFAULT
 from src.services.wallpaper import WallpaperManager
 
 
-def test_local_wallpapers_only(tmp_path: Path, qapp: QApplication) -> None:  # noqa: ARG001
+def test_local_wallpapers_only(tmp_path: Path, qapp: QApplication) -> None:
     """Test that local wallpapers work when online is disabled."""
     # Create real wallpaper image
     img = Image.new("RGB", (1920, 1080), color="blue")
@@ -28,7 +27,7 @@ def test_local_wallpapers_only(tmp_path: Path, qapp: QApplication) -> None:  # n
     assert not pixmap.isNull()
 
 
-def test_local_wallpapers_loading(tmp_path: Path, qapp: QApplication) -> None:  # noqa: ARG001
+def test_local_wallpapers_loading(tmp_path: Path, qapp: QApplication) -> None:
     """Test loading multiple local wallpapers."""
     # Create multiple wallpapers
     colors = ["blue", "red", "green"]
@@ -53,7 +52,7 @@ def test_local_wallpapers_loading(tmp_path: Path, qapp: QApplication) -> None:  
         assert not pixmap.isNull()
 
 
-def test_set_use_online(tmp_path: Path, qapp: QApplication) -> None:  # noqa: ARG001
+def test_set_use_online(tmp_path: Path, qapp: QApplication) -> None:
     """Test changing online wallpaper setting."""
     # Create test wallpaper
     img = Image.new("RGB", (1920, 1080), color="red")
@@ -79,7 +78,7 @@ def test_set_use_online(tmp_path: Path, qapp: QApplication) -> None:  # noqa: AR
     assert pixmap_after is not None or pixmap_after is None
 
 
-def test_no_wallpapers_returns_none(tmp_path: Path, qapp: QApplication) -> None:  # noqa: ARG001
+def test_no_wallpapers_returns_none(tmp_path: Path, qapp: QApplication) -> None:
     """Test that returns None when no wallpapers available."""
     manager = WallpaperManager(
         width=PRELOAD_WIDTH_DEFAULT,
@@ -92,7 +91,7 @@ def test_no_wallpapers_returns_none(tmp_path: Path, qapp: QApplication) -> None:
     assert pixmap is None
 
 
-def test_cache_directory_creation(tmp_path: Path, qapp: QApplication) -> None:  # noqa: ARG001
+def test_cache_directory_creation(tmp_path: Path, qapp: QApplication) -> None:
     """Test that WallpaperManager is initialized correctly."""
     manager = WallpaperManager(
         width=PRELOAD_WIDTH_DEFAULT,

@@ -1,4 +1,4 @@
-"""Path constants for the application."""
+"""Константы путей приложения."""
 
 import sys
 from dataclasses import dataclass, fields
@@ -6,24 +6,21 @@ from pathlib import Path
 
 
 def get_base_dir() -> Path:
-    """Get the base directory of the application.
+    """Получить базовую директорию приложения.
 
     Returns:
-        For compiled .exe: directory where .exe is located.
-        For Python script: project root directory.
+        Для .exe: директория где находится .exe.
+        Для скрипта: корневая директория проекта.
 
     """
     if getattr(sys, "frozen", False):
-        # Running as compiled .exe - use .exe location
         return Path(sys.executable).parent
-
-    # Running as script - use project root (3 levels up from this file)
     return Path(__file__).parent.parent.parent
 
 
 @dataclass(slots=True)
 class Directories:
-    """Directories for the application."""
+    """Директории приложения."""
 
     APP_DATA_DIR = get_base_dir() / "app_data"
     LOGS_DIR = APP_DATA_DIR / "logs"
@@ -34,22 +31,19 @@ class Directories:
 
     @property
     def base_dir(self) -> Path:
-        """Get the base directory of the application.
+        """Получить базовую директорию приложения.
 
         Returns:
-            For compiled .exe: directory where .exe is located.
-            For Python script: project root directory.
+            Для .exe: директория где находится .exe.
+            Для скрипта: корневая директория проекта.
 
         """
         if getattr(sys, "frozen", False):
-            # Running as compiled .exe - use .exe location
             return Path(sys.executable).parent
-
-        # Running as script - use project root (3 levels up from this file)
         return Path(__file__).parent.parent.parent
 
     def make_dirs(self) -> None:
-        """Create all necessary application directories."""
+        """Создать все необходимые директории приложения."""
         for field in fields(self):
             value = getattr(self, field.name)
             if isinstance(value, Path):
@@ -58,13 +52,10 @@ class Directories:
 
 @dataclass(slots=True)
 class Files:
-    """Files for the application."""
+    """Файлы приложения."""
 
     LOGO_PATH = Directories.LOGO_DIR / "icon.ico"
     SETTINGS_DB_PATH = Directories.SETTINGS_DIR / "settings.db"
     WALLPAPER_CACHE_PATH = Directories.CACHE_DIR / "wallpaper_cache.jpg"
     LOG_PATH = Directories.LOGS_DIR / "log.log"
     MEMORY_DB_PATH = ":memory:"
-
-
-Directories().make_dirs()

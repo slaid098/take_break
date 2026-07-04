@@ -1,4 +1,4 @@
-"""Picsum wallpaper getter."""
+"""Получение обоев с Picsum."""
 
 from pathlib import Path
 
@@ -13,20 +13,27 @@ from .base import BaseWallpaperGetter
 
 
 class PicsumWallpaperGetter(BaseWallpaperGetter):
-    """Picsum wallpaper getter."""
+    """Получение случайных обоев с picsum.photos."""
 
     def __init__(self, width: int, height: int, cache_file_path: Path | None = None) -> None:
-        """Initialize the Picsum wallpaper getter."""
+        """Инициализировать getter обоев с Picsum.
+
+        Args:
+            width: Ширина изображения.
+            height: Высота изображения.
+            cache_file_path: Путь к файлу кэша.
+
+        """
         self.timeout = LOAD_IMAGE_TIMEOUT_DEFAULT
         self.width = width
         self.height = height
         self.cache_path = cache_file_path or Files.WALLPAPER_CACHE_PATH
 
     def get_wallpaper(self) -> Path | None:
-        """Get a random wallpaper.
+        """Получить случайные обои с Picsum.
 
         Returns:
-            Path to the wallpaper or None if failed.
+            Путь к скачанному изображению или None при ошибке.
 
         """
         url = PICSUM_URL.format(width=self.width, height=self.height)
@@ -34,10 +41,11 @@ class PicsumWallpaperGetter(BaseWallpaperGetter):
             response = requests.get(url, timeout=self.timeout)
             response.raise_for_status()
 
+            self.cache_path.parent.mkdir(parents=True, exist_ok=True)
             self.cache_path.write_bytes(response.content)
-            logger.debug(f"online image from {url} saved succefully")
         except requests.RequestException as e:
-            logger.warning(f"Failed to fetch online wallpaper from {url}: {e}")
+            logger.warning(f"Не удалось загрузить обои с {url}: {e}")
             return None
         else:
+            logger.debug(f"Онлайн-обои с {url} сохранены")
             return self.cache_path

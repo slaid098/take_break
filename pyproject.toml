@@ -1,22 +1,122 @@
 [project]
 name = "take_break"
 version = "1.0.0"
-description = "Application for enforcing regular breaks during computer work"
-authors = []
+description = "Принудительные перерывы для защиты здоровья и фокуса при работе за компьютером"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13"
+authors = [{ name = "slaid098" }]
+keywords = ["break-timer", "health", "productivity", "pomodoro", "windows"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Utilities",
+]
 dependencies = [
-    "pywin32>=306",
     "loguru>=0.7.2",
     "pyside6>=6.6.1",
     "keyboard>=0.13.5",
     "pillow>=10.2.0",
     "requests>=2.32.5",
 ]
-requires-python = ">=3.13"
 
-[tool.uv]
-dev-dependencies = [
+[project.urls]
+Homepage = "https://github.com/slaid098/take_break"
+Repository = "https://github.com/slaid098/take_break"
+Issues = "https://github.com/slaid098/take_break/issues"
+
+[dependency-groups]
+dev = [
     "pyinstaller>=6.16.0",
     "pytest>=8.4.2",
     "pytest-qt>=4.5.0",
+    "pytest-cov>=5.0",
+    "mypy>=1.10",
+    "ruff>=0.5",
+    "types-requests>=2.32",
 ]
 
+# ── Ruff ──────────────────────────────────────────────────────────────────
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",    # pycodestyle
+    "F",         # pyflakes
+    "I",         # isort
+    "B",         # bugbear
+    "UP",        # pyupgrade
+    "SIM",       # simplify
+    "C90",       # mccabe complexity
+    "PL",        # pylint
+    "RUF",       # ruff-specific
+    "S",         # bandit (security)
+    "TRY",       # tryceratops (exception handling)
+    "LOG",       # flake8-logging
+]
+ignore = [
+    "S101",      # assert in tests
+    "S311",      # pseudo-random for non-crypto use
+    "RUF001",    # ambiguous Cyrillic chars (we write in Russian)
+    "RUF002",    # same for docstrings
+    "RUF003",    # same for comments
+    "TRY003",    # long messages outside exception class
+    "PLR2004",   # magic values in tests
+    "S106",      # hardcoded passwords in tests
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-args = 5
+max-branches = 12
+max-returns = 5
+max-statements = 50
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "PLR2004", "S106"]
+
+# ── mypy ──────────────────────────────────────────────────────────────────
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_return_any = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["keyboard.*", "PySide6.*"]
+ignore_missing_imports = true
+
+# ── pytest ────────────────────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report=term-missing --cov-fail-under=60"
+testpaths = ["tests"]
+
+# ── coverage ──────────────────────────────────────────────────────────────
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

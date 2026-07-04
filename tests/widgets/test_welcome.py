@@ -1,7 +1,6 @@
 """Tests for welcome dialog widget."""
 
 from pytestqt.qtbot import QtBot
-
 from src.constants.settings import POMODORO_MODE_MIN, STANDARD_MODE_MIN
 from src.widgets.welcome import WelcomeDialog
 
@@ -87,4 +86,3 @@ def test_welcome_dialog_switching_between_modes(qtbot: QtBot) -> None:
     # Switch back to 45 minutes
     dialog.radio_45.setChecked(True)
     assert dialog.get_selected_work_duration() == STANDARD_MODE_MIN
-

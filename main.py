@@ -10,11 +10,11 @@ from src.constants.path import Directories
 
 
 def main() -> None:
-    """Run the Take Break application.
+    """Запустить приложение Take Break.
 
-    Initializes the logger, creates an application instance, runs the
-    main loop, and handles graceful shutdown on KeyboardInterrupt
-    or unexpected errors.
+    Инициализирует логгер, создаёт экземпляр приложения,
+    запускает главный цикл и обрабатывает корректное завершение
+    при KeyboardInterrupt или неожиданных ошибках.
     """
     Directories().make_dirs()
     setup_logger()
@@ -29,6 +29,9 @@ def main() -> None:
     except Exception as e:
         logger.exception(f"Неожиданная ошибка: {e}")
     finally:
+        import keyboard
+
+        keyboard.unhook_all()
         logger.info("Завершение работы приложения")
         sys.exit(0)
 

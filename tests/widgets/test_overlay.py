@@ -4,7 +4,6 @@ from datetime import UTC, datetime
 
 from PySide6.QtGui import QCloseEvent
 from pytestqt.qtbot import QtBot
-
 from src.constants.settings import MAX_FOCUS_LENGTH, PRELOAD_HEIGHT_DEFAULT, PRELOAD_WIDTH_DEFAULT
 from src.widgets.overlay import BlockingOverlay
 
@@ -96,7 +95,6 @@ def test_overlay_hide_extra_rest_timer(qtbot: QtBot) -> None:
     )
     qtbot.addWidget(overlay)
 
-
     overlay.show_extra_rest_timer(datetime.now(UTC))
     overlay.hide_extra_rest_timer()
 
@@ -163,4 +161,3 @@ def test_overlay_focus_input_respects_max_length(qtbot: QtBot) -> None:
     qtbot.addWidget(overlay)
 
     assert overlay.focus_input.maxLength() == MAX_FOCUS_LENGTH
-

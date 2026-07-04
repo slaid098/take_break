@@ -46,4 +46,3 @@ def test_get_initial_text_default_duration() -> None:
     result = texts.Overlay.get_initial_text(work_duration=None)
 
     assert f"{DEFAULT_WORK_DURATION_MIN}-минутный" in result
-

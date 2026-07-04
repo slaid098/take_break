@@ -23,10 +23,12 @@ class BlockingOverlay(QWidget):
 
     Attributes:
         close_requested (Signal): Emitted when the window is allowed to close.
+        enter_pressed (Signal): Emitted when Enter is pressed (overlay or input).
 
     """
 
     close_requested = Signal()
+    enter_pressed = Signal()
 
     def __init__(self, screen_width: int, screen_height: int) -> None:
         """Initialize the overlay window.
@@ -90,6 +92,7 @@ class BlockingOverlay(QWidget):
         self.focus_input.setMaxLength(MAX_FOCUS_LENGTH)
         self.focus_input.setStyleSheet(OVERLAY_INPUT_STYLE)
         self.focus_input.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.focus_input.returnPressed.connect(self.enter_pressed.emit)
 
         font_metrics = self.focus_input.fontMetrics()
         char_width = font_metrics.horizontalAdvance("M")
@@ -116,7 +119,7 @@ class BlockingOverlay(QWidget):
         layout.addStretch()
         self.setLayout(layout)
 
-    def keyPressEvent(self, event: QKeyEvent) -> None:  # noqa: N802
+    def keyPressEvent(self, event: QKeyEvent) -> None:
         """Handle key press events.
 
         Specifically blocks the Escape key from closing the window when in
@@ -130,9 +133,13 @@ class BlockingOverlay(QWidget):
             event.ignore()
             return
 
+        if event.key() == Qt.Key.Key_Return and not self.is_blocking:
+            self.enter_pressed.emit()
+            return
+
         super().keyPressEvent(event)
 
-    def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
+    def closeEvent(self, event: QCloseEvent) -> None:
         """Handle the window close event.
 
         Prevents the window from being closed (e.g., via Alt+F4) while
@@ -148,7 +155,7 @@ class BlockingOverlay(QWidget):
             event.accept()
             self.close_requested.emit()
 
-    def showEvent(self, event: QShowEvent) -> None:  # noqa: N802
+    def showEvent(self, event: QShowEvent) -> None:
         """Handle the window show event.
 
         Selects a random wallpaper to be displayed when the window becomes visible.
@@ -161,7 +168,7 @@ class BlockingOverlay(QWidget):
         super().showEvent(event)
         self.update()  # Trigger a repaint with the new wallpaper
 
-    def paintEvent(self, event: QPaintEvent) -> None:  # noqa: N802
+    def paintEvent(self, event: QPaintEvent) -> None:
         """Handle the window paint event.
 
         Draws the current wallpaper as the background with a dark tint.
@@ -256,12 +263,13 @@ class BlockingOverlay(QWidget):
         self.extra_rest_label.setText(text)
 
     def show(self) -> None:
-        """Show the overlay in true fullscreen mode.
+        """Показать overlay в полноэкранном режиме.
 
-        This is the key method for ensuring a non-bypassable block.
-        `showFullScreen` correctly covers the entire screen, including the
-        taskbar, and takes focus.
+        showFullScreen покрывает весь экран включая панель задач
+        и забирает фокус. setFocus гарантирует что keyboard events
+        идут на overlay, а не на дочерние виджеты.
         """
         self.showFullScreen()
         self.activateWindow()
         self.raise_()
+        self.setFocus(Qt.FocusReason.ActiveWindowFocusReason)

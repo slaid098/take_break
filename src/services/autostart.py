@@ -1,94 +1,117 @@
-"""Windows autostart management service."""
+"""Управление автозапуском приложения в Windows."""
 
 import sys
-import winreg
 from pathlib import Path
+from typing import Any
 
 from loguru import logger
 
+try:
+    import winreg as _winreg
+
+    winreg: Any = _winreg
+except ImportError:
+    winreg: Any = None  # type: ignore[no-redef]
+
+_RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
+_APP_NAME = "TakeBreak"
+
 
 def get_exe_path() -> str | None:
-    """Get the path to the executable if running as compiled exe.
+    """Получить путь к исполняемому файлу.
 
     Returns:
-        The absolute path to the .exe file, or None if running from Python script.
+        Путь к .exe файлу, или None если запущено как Python-скрипт.
 
     """
-    # Check if running as compiled executable (PyInstaller sets sys.frozen)
     if not getattr(sys, "frozen", False):
         return None
-
-    # sys.executable will be the .exe path when frozen
     return str(Path(sys.executable).resolve())
 
 
 def is_autostart_enabled() -> bool:
-    """Check if autostart is currently enabled in Windows registry.
+    """Проверить, включён ли автозапуск в реестре Windows.
 
     Returns:
-        True if autostart is enabled, False otherwise.
+        True если автозапуск включён, False иначе.
 
     """
-    try:
-        key = winreg.OpenKey(
-            winreg.HKEY_CURRENT_USER,
-            r"Software\Microsoft\Windows\CurrentVersion\Run",
-        )
-        try:
-            winreg.QueryValueEx(key, "TakeBreak")
-        except FileNotFoundError:
-            return False
-        else:
-            return True
-        finally:
-            winreg.CloseKey(key)
-    except Exception as e:
-        logger.error(f"Failed to check autostart status: {e}")
+    if winreg is None:
+        logger.debug("Автозапуск недоступен на этой платформе")
         return False
+
+    try:
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, _RUN_KEY)
+    except OSError as e:
+        logger.error(f"Не удалось открыть ключ реестра: {e}")
+        return False
+
+    try:
+        winreg.QueryValueEx(key, _APP_NAME)
+    except FileNotFoundError:
+        return False
+    else:
+        return True
+    finally:
+        winreg.CloseKey(key)
 
 
 def enable_autostart() -> None:
-    r"""Enable autostart by adding TakeBreak to Windows registry.
+    """Включить автозапуск через реестр Windows.
 
-    Adds an entry to HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
-    that runs the application executable. Only works when running as compiled .exe.
+    Работает только для скомпилированного .exe файла.
     """
-    exe_path = get_exe_path()
+    if winreg is None:
+        logger.warning("Автозапуск недоступен на этой платформе")
+        return
 
+    exe_path = get_exe_path()
     if exe_path is None:
-        logger.warning("Автозагрузка доступна только для скомпилированного приложения")
+        logger.warning("Автозапуск доступен только для скомпилированного приложения")
         return
 
     try:
         key = winreg.OpenKey(
             winreg.HKEY_CURRENT_USER,
-            r"Software\Microsoft\Windows\CurrentVersion\Run",
+            _RUN_KEY,
             0,
             winreg.KEY_SET_VALUE,
         )
-        try:
-            winreg.SetValueEx(key, "TakeBreak", 0, winreg.REG_SZ, exe_path)
-            logger.info("Autostart enabled")
-        finally:
-            winreg.CloseKey(key)
-    except Exception as e:
-        logger.error(f"Failed to enable autostart: {e}")
+    except OSError as e:
+        logger.error(f"Не удалось открыть ключ реестра: {e}")
+        return
+
+    try:
+        winreg.SetValueEx(key, _APP_NAME, 0, winreg.REG_SZ, exe_path)
+        logger.info("Автозапуск включён")
+    finally:
+        winreg.CloseKey(key)
 
 
 def disable_autostart() -> None:
-    """Disable autostart by removing TakeBreak from Windows registry."""
+    """Отключить автозапуск, удалив запись из реестра Windows."""
+    if winreg is None:
+        logger.warning("Автозапуск недоступен на этой платформе")
+        return
+
     try:
         key = winreg.OpenKey(
             winreg.HKEY_CURRENT_USER,
-            r"Software\Microsoft\Windows\CurrentVersion\Run",
+            _RUN_KEY,
             0,
             winreg.KEY_SET_VALUE,
         )
-        winreg.DeleteValue(key, "TakeBreak")
-        winreg.CloseKey(key)
-        logger.info("Autostart disabled")
     except FileNotFoundError:
-        logger.debug("Autostart entry not found, nothing to remove")
-    except Exception as e:
-        logger.error(f"Failed to disable autostart: {e}")
+        logger.debug("Запись автозапуска не найдена, нечего удалять")
+        return
+    except OSError as e:
+        logger.error(f"Не удалось открыть ключ реестра: {e}")
+        return
 
+    try:
+        winreg.DeleteValue(key, _APP_NAME)
+        logger.info("Автозапуск отключён")
+    except FileNotFoundError:
+        logger.debug("Запись автозапуска не найдена, нечего удалять")
+    finally:
+        winreg.CloseKey(key)

@@ -63,7 +63,7 @@ class TimerWidget(QWidget):
         self.setMinimumHeight(min_height)
         self.setMinimumWidth(180)
 
-    def paintEvent(self, event: QPaintEvent) -> None:  # noqa: N802
+    def paintEvent(self, event: QPaintEvent) -> None:
         """Paint the widget background with transparency."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -126,4 +126,3 @@ class TimerWidget(QWidget):
     def _paint_it_red(self) -> None:
         """Paint the timer in red."""
         self.time_label.setStyleSheet(TIMER_TIME_RED_STYLE)
-

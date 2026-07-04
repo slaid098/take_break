@@ -4,7 +4,6 @@ from datetime import timedelta
 
 from PySide6.QtCore import Qt
 from pytestqt.qtbot import QtBot
-
 from src.constants.settings import MAX_FOCUS_LENGTH, RED_SECOND_THRESHOLD
 from src.widgets.styles import TIMER_TIME_RED_STYLE
 from src.widgets.timer import TimerWidget
@@ -94,4 +93,3 @@ def test_timer_size_based_on_max_focus_length(qtbot: QtBot) -> None:
     focus_geometry = widget.focus_label.geometry()
     assert focus_geometry.right() <= widget.width()
     assert focus_geometry.bottom() <= widget.height()
-

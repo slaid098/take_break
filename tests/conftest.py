@@ -1,7 +1,6 @@
 """Pytest configuration and fixtures."""
 
 import pytest
-
 from src.config.settings import Settings
 from src.constants.path import Files
 from src.db.db import Database

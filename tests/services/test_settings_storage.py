@@ -1,103 +1,80 @@
-"""Tests for settings storage service."""
-
+"""Тесты сервиса настроек."""
 
 from src.config.settings import Settings
 from src.constants.settings import DEFAULT_WORK_DURATION_MIN, POMODORO_MODE_MIN, STANDARD_MODE_MIN
+from src.db.db import Database
 
 
-def test_save_and_get_focus(test_settings: Settings) -> None:
-    """Test saving and loading focus text."""
-    test_settings.save_focus("test focus")
-    focus = test_settings.get_focus()
+class TestSettings:
+    """Тесты хранилища настроек."""
 
-    assert focus == "test focus"
+    def _make_settings(self) -> Settings:
+        """Создать настройки с in-memory базой."""
+        return Settings(db=Database(db_path=":memory:"))
 
+    def test_get_focus_returns_empty_by_default(self) -> None:
+        """get_focus возвращает пустую строку по умолчанию."""
+        settings = self._make_settings()
+        assert settings.get_focus() == ""
 
-def test_first_run_lifecycle(test_settings: Settings) -> None:
-    """Test first run flag lifecycle."""
-    assert test_settings.is_first_run()
+    def test_save_and_get_focus(self) -> None:
+        """save_focus и get_focus работают корректно."""
+        settings = self._make_settings()
+        settings.save_focus("Изучать Go")
+        assert settings.get_focus() == "Изучать Go"
 
-    test_settings.mark_first_run_complete()
+    def test_is_first_run_true_by_default(self) -> None:
+        """is_first_run возвращает True при первом запуске."""
+        settings = self._make_settings()
+        assert settings.is_first_run() is True
 
-    assert not test_settings.is_first_run()
+    def test_mark_first_run_complete(self) -> None:
+        """mark_first_run_complete отключает is_first_run."""
+        settings = self._make_settings()
+        settings.mark_first_run_complete()
+        assert settings.is_first_run() is False
 
+    def test_set_invalid_work_duration_uses_default(self) -> None:
+        """set_work_duration с некорректным значением использует default."""
+        settings = self._make_settings()
+        settings.set_work_duration(999)
+        assert settings.get_work_duration() == DEFAULT_WORK_DURATION_MIN
 
-def test_empty_focus_by_default(test_settings: Settings) -> None:
-    """Test that empty focus is returned by default."""
-    focus = test_settings.get_focus()
+    def test_set_valid_work_duration_pomodoro(self) -> None:
+        """set_work_duration с 25 (Pomodoro) сохраняет."""
+        settings = self._make_settings()
+        settings.set_work_duration(POMODORO_MODE_MIN)
+        assert settings.get_work_duration() == POMODORO_MODE_MIN
 
-    assert focus == ""
+    def test_set_valid_work_duration_standard(self) -> None:
+        """set_work_duration с 45 (Standard) сохраняет."""
+        settings = self._make_settings()
+        settings.set_work_duration(STANDARD_MODE_MIN)
+        assert settings.get_work_duration() == STANDARD_MODE_MIN
 
+    def test_online_wallpapers_default_true(self) -> None:
+        """use_online_wallpapers по умолчанию True."""
+        settings = self._make_settings()
+        assert settings.get_use_online_wallpapers() is True
 
-def test_json_format(test_settings: Settings) -> None:
-    """Test that settings are saved in correct SQLite format."""
-    test_settings.save_focus("test")
+    def test_set_online_wallpapers_false(self) -> None:
+        """set_use_online_wallpapers(False) сохраняет."""
+        settings = self._make_settings()
+        settings.set_use_online_wallpapers(False)
+        assert settings.get_use_online_wallpapers() is False
 
-    # Settings are now stored in SQLite, not JSON
-    assert test_settings.get_focus() == "test"
+    def test_move_timer_hotkey_default_empty(self) -> None:
+        """get_move_timer_hotkey возвращает пустую строку по умолчанию."""
+        settings = self._make_settings()
+        assert settings.get_move_timer_hotkey() == ""
 
+    def test_set_move_timer_hotkey(self) -> None:
+        """set_move_timer_hotkey сохраняет хоткей."""
+        settings = self._make_settings()
+        settings.set_move_timer_hotkey("ctrl+alt+t")
+        assert settings.get_move_timer_hotkey() == "ctrl+alt+t"
 
-def test_focus_persists_on_empty_save(test_settings: Settings) -> None:
-    """Test that empty focus is saved correctly (not ignored)."""
-    # Save initial focus
-    test_settings.save_focus("Previous focus")
-    loaded = test_settings.get_focus()
-    assert loaded == "Previous focus"
-
-    # Save empty focus
-    test_settings.save_focus("")
-
-    # Empty string should be saved (not ignored)
-    loaded_empty = test_settings.get_focus()
-    assert loaded_empty == ""
-
-    # Verify SQLite contains empty string
-    assert test_settings.get_focus() == ""
-
-
-def test_get_work_duration(test_settings: Settings) -> None:
-    """Test getting work duration setting."""
-    # Default should be 45
-    duration = test_settings.get_work_duration()
-    assert duration == DEFAULT_WORK_DURATION_MIN
-
-
-def test_set_work_duration(test_settings: Settings) -> None:
-    """Test setting work duration."""
-    # Set to 25 minutes
-    test_settings.set_work_duration(POMODORO_MODE_MIN)
-    assert test_settings.get_work_duration() == POMODORO_MODE_MIN
-
-    # Set to 45 minutes
-    test_settings.set_work_duration(STANDARD_MODE_MIN)
-    assert test_settings.get_work_duration() == STANDARD_MODE_MIN
-
-    # Invalid duration should use default
-    test_settings.set_work_duration(100)
-    assert test_settings.get_work_duration() == DEFAULT_WORK_DURATION_MIN
-
-
-def test_get_move_timer_hotkey(test_settings: Settings) -> None:
-    """Test getting move timer hotkey."""
-    # Default should be empty (not set)
-    hotkey = test_settings.get_move_timer_hotkey()
-    assert hotkey == ""
-
-
-def test_set_move_timer_hotkey(test_settings: Settings) -> None:
-    """Test setting move timer hotkey."""
-    # Set and verify hotkey
-    test_hotkey = "ctrl+alt+t"
-    test_settings.set_move_timer_hotkey(test_hotkey)
-    assert test_settings.get_move_timer_hotkey() == test_hotkey
-
-
-def test_move_timer_hotkey_persistence(test_settings: Settings) -> None:
-    """Test that move timer hotkey persists across storage instances."""
-    # Create first instance and set hotkey
-    test_hotkey = "ctrl+shift+m"
-    test_settings.set_move_timer_hotkey(test_hotkey)
-
-    # Verify hotkey is loaded correctly
-    assert test_settings.get_move_timer_hotkey() == test_hotkey
-
+    def test_load_image_timeout_default(self) -> None:
+        """get_load_image_timeout возвращает default."""
+        settings = self._make_settings()
+        assert settings.get_load_image_timeout() == 10

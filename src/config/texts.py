@@ -108,21 +108,21 @@ class Overlay:
             f"{duration}-минутный</span> рабочий сеанс</p></div>"
         )
 
-    @property
-    def break_message(self) -> str:
-        """Get the break message.
+    @staticmethod
+    def break_message() -> str:
+        """Получить сообщение о перерыве.
 
         Returns:
-            Break message text.
+            Текст сообщения о перерыве.
 
         """
-        return f"Break: {BREAK_DURATION_MIN} minutes"
+        return f"Отдых: {BREAK_DURATION_MIN} минут"
 
 
 class WorkModes:
-    """Work mode names."""
+    """Названия рабочих режимов."""
 
-    POMODORO = "Pomodoro"
+    POMODORO = "Помодоро"
     STANDARD = "Стандартный"
 
 

@@ -1,4 +1,4 @@
-"""Widget positioning service."""
+"""Сервис позиционирования виджета."""
 
 from enum import StrEnum, auto
 
@@ -6,7 +6,7 @@ from PySide6.QtCore import QPoint
 
 
 class WidgetPosition(StrEnum):
-    """Timer widget position on screen."""
+    """Позиция виджета таймера на экране."""
 
     TOP_LEFT = auto()
     TOP_CENTER = auto()
@@ -16,6 +16,9 @@ class WidgetPosition(StrEnum):
     BOTTOM_CENTER = auto()
 
 
+_POSITIONS = tuple(WidgetPosition)
+
+
 def calculate_position(
     position: WidgetPosition,
     screen_width: int,
@@ -23,46 +26,43 @@ def calculate_position(
     widget_width: int,
     widget_height: int,
 ) -> QPoint:
-    """Calculate widget position based on screen geometry.
+    """Вычислить позицию виджета на основе геометрии экрана.
 
     Args:
-        position: The desired position.
-        screen_width: Screen width in pixels.
-        screen_height: Screen height in pixels.
-        widget_width: Widget width in pixels.
-        widget_height: Widget height in pixels.
+        position: Желаемая позиция.
+        screen_width: Ширина экрана в пикселях.
+        screen_height: Высота экрана в пикселях.
+        widget_width: Ширина виджета в пикселях.
+        widget_height: Высота виджета в пикселях.
 
     Returns:
-        The calculated QPoint position.
+        Вычисленная позиция QPoint.
 
     """
     pos_name = position.lower()
 
-    # Calculate Y position
     y = 0 if "top" in pos_name else screen_height - widget_height
 
-    # Calculate X position
     if "left" in pos_name:
         x = 0
     elif "right" in pos_name:
         x = screen_width - widget_width
-    else:  # center
+    else:
         x = (screen_width - widget_width) // 2
 
     return QPoint(x, y)
 
 
 def get_next_position(current: WidgetPosition) -> WidgetPosition:
-    """Get the next position in cycle.
+    """Получить следующую позицию в цикле.
 
     Args:
-        current: Current widget position.
+        current: Текущая позиция виджета.
 
     Returns:
-        Next position in the cycle.
+        Следующая позиция в цикле.
 
     """
-    positions = list(WidgetPosition)
-    current_index = positions.index(current)
-    next_index = (current_index + 1) % len(positions)
-    return positions[next_index]
+    current_index = _POSITIONS.index(current)
+    next_index = (current_index + 1) % len(_POSITIONS)
+    return _POSITIONS[next_index]
