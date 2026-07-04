@@ -1,6 +1,6 @@
 [project]
 name = "take_break"
-version = "1.0.0"
+version = "1.0.1"
 description = "Принудительные перерывы для защиты здоровья и фокуса при работе за компьютером"
 readme = "README.md"
 license = "MIT"
