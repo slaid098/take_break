@@ -1,6 +1,5 @@
 """Tests for settings storage service."""
 
-
 from src.config.settings import Settings
 from src.constants.settings import DEFAULT_WORK_DURATION_MIN, POMODORO_MODE_MIN, STANDARD_MODE_MIN
 
@@ -100,4 +99,3 @@ def test_move_timer_hotkey_persistence(test_settings: Settings) -> None:
 
     # Verify hotkey is loaded correctly
     assert test_settings.get_move_timer_hotkey() == test_hotkey
-

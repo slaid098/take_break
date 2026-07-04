@@ -1,7 +1,6 @@
 """Tests for position service."""
 
 from PySide6.QtCore import QPoint
-
 from src.services.position import WidgetPosition, calculate_position, get_next_position
 
 

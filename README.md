@@ -1,68 +1,80 @@
 <div align="center">
   <img src="https://github.com/slaid098/take_break/blob/master/images/logo.png?raw=true" alt="Take Break Logo" width="100"/>
   <h1>Take Break</h1>
-  <p><strong>A simple, unskippable break timer to protect your health and keep your focus.</strong></p>
-  <p><i>Discipline in work, freedom in rest.</i></p>
+  <p><strong>Простой неотключаемый таймер перерывов для защиты здоровья и фокуса.</strong></p>
+  <p><i>Дисциплина в работе, свобода в отдыхе.</i></p>
   <p>
-    <img src="https://img.shields.io/badge/OS-Windows-blue" alt="Windows OS">
+    <img src="https://img.shields.io/badge/ОС-Windows-blue" alt="Windows OS">
   </p>
-  <p><a href="https://github.com/slaid098/take_break/releases"><strong>Download Latest Version for Windows</strong></a></p>
+  <p><a href="https://github.com/slaid098/take_break/releases"><strong>Скачать последнюю версию для Windows</strong></a></p>
 </div>
 
 ---
 
 ![Take Break Demo](https://github.com/slaid098/take_break/blob/master/images/demo.gif?raw=true)
-*The core loop: Welcome → Set focus → Work → Unskippable Break → Refocus.*
+*Основной цикл: Приветствие → Фокус → Работа → Обязательный перерыв → Возврат к фокусу.*
 
 ---
 
-## Features
+## Возможности
 
--   Set a key focus for your next work session.
--   **Work for a fixed time, but rest as long as you need.**
--   Enjoy new background wallpapers during every break.
--   You can only exit the application during a work session.
--   Two modes: 45 min (Deep Work) or 25 min (Pomodoro).
--   A clean, fullscreen overlay that blocks distractions.
+- Устанавливайте фокус на следующую рабочую сессию.
+- **Работайте фиксированное время, отдыхайте сколько нужно.**
+- Новые фоновые обои при каждом перерыве.
+- Выйти из приложения можно только во время рабочей сессии.
+- Два режима: 45 минут (Стандартный) или 25 минут (Помодоро).
+- Полноэкранный overlay, блокирующий отвлекающие факторы.
 
-## Install & Run
+## Установка и запуск
 
-This application is **portable** and does not require installation.
-**Currently available for Windows 10 and later.**
+Приложение **портативное** и не требует установки.
+**Доступно для Windows 10 и новее.**
 
-1.  Go to the [**Releases**](https://github.com/slaid098/take_break/releases) page.
-2.  Download the `take_break_vX.X.zip` (or the latest version).
-3.  Unzip the folder to any convenient location.
-4.  Run `take_break.exe` to start the application.
+1. Перейдите на страницу [**Releases**](https://github.com/slaid098/take_break/releases).
+2. Скачайте `take_break_vX.X.zip` (или последнюю версию).
+3. Распакуйте папку в удобное место.
+4. Запустите `take_break.exe`.
 
 <details>
-<summary><strong>Running from Source (for Developers)</strong></summary>
+<summary><strong>Запуск из исходного кода (для разработчиков)</strong></summary>
 
-This project is managed with [uv](https://github.com/astral-sh/uv).
+Проект управляется через [uv](https://github.com/astral-sh/uv).
 
-**Prerequisites:**
+**Требования:**
 - Python 3.13+
-- `uv` installed
+- `uv` установлен
 
-**Steps:**
+**Шаги:**
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/slaid098/take_break
-    cd take_break
-    ```
+1. **Клонировать репозиторий:**
+   ```bash
+   git clone https://github.com/slaid098/take_break
+   cd take_break
+   ```
 
-2.  **Sync environment & install dependencies:**
-    ```bash
-    uv sync
-    ```
+2. **Синхронизировать окружение и установить зависимости:**
+   ```bash
+   uv sync --group dev
+   ```
 
-3.  **Run the application:**
-    ```bash
-    uv run python main.py
-    ```
+3. **Запустить приложение:**
+   ```bash
+   uv run python main.py
+   ```
+
+4. **Запустить тесты:**
+   ```bash
+   QT_QPA_PLATFORM=offscreen uv run pytest
+   ```
+
+5. **Проверить типы и линтер:**
+   ```bash
+   uv run mypy src/
+   uv run ruff check src/ tests/
+   ```
+
 </details>
 
-## License
+## Лицензия
 
 [MIT](LICENSE) © 2024-2025 slaid098

@@ -42,4 +42,5 @@ build/
 *.json
 *.db
 *.db-shm
-*.db-wal
+*.db-walapp_data/cache/
+.coverage

@@ -1,4 +1,4 @@
-"""Settings storage service for persistent data."""
+"""Хранилище настроек приложения."""
 
 from loguru import logger
 
@@ -12,25 +12,25 @@ from src.schemas.settings import SettingsKey
 
 
 class Settings:
-    """Manages persistent settings storage using SQLite."""
+    """Управление постоянными настройками через SQLite."""
 
     def __init__(self, db: Database) -> None:
-        """Initialize the settings storage.
+        """Инициализировать хранилище настроек.
 
         Args:
-            db: Database instance.
+            db: Экземпляр базы данных.
 
         """
         self.db = db
         self._ensure_defaults()
 
     def _ensure_defaults(self) -> None:
-        """Ensure all default settings are present in database."""
-        defaults = {
+        """Заполнить значения по умолчанию если их нет в базе."""
+        defaults: dict[str, str | int | bool] = {
             SettingsKey.FOCUS: "",
             SettingsKey.FIRST_RUN_COMPLETE: "false",
             SettingsKey.USE_ONLINE_WALLPAPERS: "true",
-            SettingsKey.WORK_DURATION: "45",
+            SettingsKey.WORK_DURATION: str(DEFAULT_WORK_DURATION_MIN),
             SettingsKey.MOVE_TIMER_HOTKEY: "",
             SettingsKey.LOAD_IMAGE_TIMEOUT: str(LOAD_IMAGE_TIMEOUT_DEFAULT),
         }
@@ -40,114 +40,116 @@ class Settings:
                 self.db.set(key, value=value)
 
     def get_focus(self) -> str:
-        """Get the saved focus text.
+        """Получить сохранённый фокус.
 
         Returns:
-            The saved focus text or empty string.
+            Сохранённый фокус или пустая строка.
 
         """
-        return self.db.get(SettingsKey.FOCUS, "")
+        return self.db.get(SettingsKey.FOCUS, "") or ""
 
     def save_focus(self, focus: str) -> None:
-        """Save the focus text.
+        """Сохранить фокус.
 
         Args:
-            focus: The focus text to save.
+            focus: Текст фокуса для сохранения.
 
         """
         self.db.set(SettingsKey.FOCUS, value=focus)
-        logger.debug(f"Focus saved: {focus}")
+        logger.debug(f"Фокус сохранён: {focus}")
 
     def is_first_run(self) -> bool:
-        """Check if this is the first run of the application.
+        """Проверить, первый ли это запуск приложения.
 
         Returns:
-            True if this is the first run, False otherwise.
+            True если первый запуск, False иначе.
 
         """
         return not self.db.get_bool(SettingsKey.FIRST_RUN_COMPLETE, default=False)
 
     def mark_first_run_complete(self) -> None:
-        """Mark the first run as complete."""
+        """Отметить первый запуск как завершённый."""
         self.db.set(SettingsKey.FIRST_RUN_COMPLETE, value=True)
-        logger.debug("First run marked as complete")
+        logger.debug("Первый запуск отмечен как завершённый")
 
     def get_use_online_wallpapers(self) -> bool:
-        """Get online wallpapers setting.
+        """Получить настройку онлайн-обоев.
 
         Returns:
-            Whether to use online wallpapers.
+            Использовать ли онлайн-обои.
 
         """
         return self.db.get_bool(SettingsKey.USE_ONLINE_WALLPAPERS, default=True)
 
     def set_use_online_wallpapers(self, enabled: bool) -> None:
-        """Set online wallpapers setting.
+        """Установить настройку онлайн-обоев.
 
         Args:
-            enabled: Whether to enable online wallpapers.
+            enabled: Включить ли онлайн-обои.
 
         """
         self.db.set(SettingsKey.USE_ONLINE_WALLPAPERS, value=enabled)
-        logger.debug(f"Use online wallpapers set to: {enabled}")
+        logger.debug(f"Онлайн-обои: {enabled}")
 
     def get_work_duration(self) -> int:
-        """Get work duration setting.
+        """Получить длительность рабочего режима.
 
         Returns:
-            Work duration in minutes (25 or 45).
+            Длительность в минутах (25 или 45).
 
         """
         return self.db.get_int(SettingsKey.WORK_DURATION, DEFAULT_WORK_DURATION_MIN)
 
     def set_work_duration(self, duration: int) -> None:
-        """Set work duration setting.
+        """Установить длительность рабочего режима.
 
         Args:
-            duration: Work duration in minutes (should be 25 or 45).
+            duration: Длительность в минутах (25 или 45).
 
         """
         if duration not in AVAILABLE_WORK_MODES:
-            logger.warning(f"Invalid work duration: {duration}, using default: 45")
-            duration = 45
+            logger.warning(
+                f"Некорректная длительность: {duration}, использую {DEFAULT_WORK_DURATION_MIN}"
+            )
+            duration = DEFAULT_WORK_DURATION_MIN
 
         self.db.set(SettingsKey.WORK_DURATION, value=duration)
-        logger.debug(f"Work duration set to: {duration} minutes")
+        logger.debug(f"Длительность работы: {duration} минут")
 
     def get_move_timer_hotkey(self) -> str:
-        """Get move timer hotkey setting.
+        """Получить хоткей перемещения таймера.
 
         Returns:
-            The saved move timer hotkey or empty string if not set.
+            Сохранённый хоткей или пустая строка.
 
         """
-        return self.db.get(SettingsKey.MOVE_TIMER_HOTKEY, "")
+        return self.db.get(SettingsKey.MOVE_TIMER_HOTKEY, "") or ""
 
     def set_move_timer_hotkey(self, hotkey: str) -> None:
-        """Set move timer hotkey setting.
+        """Сохранить хоткей перемещения таймера.
 
         Args:
-            hotkey: The hotkey to save (e.g., "ctrl+alt+t").
+            hotkey: Хоткей (например, "ctrl+alt+t").
 
         """
         self.db.set(SettingsKey.MOVE_TIMER_HOTKEY, value=hotkey)
-        logger.debug(f"Move timer hotkey set to: {hotkey}")
+        logger.debug(f"Хоткей перемещения таймера: {hotkey}")
 
     def get_load_image_timeout(self) -> int:
-        """Get load image timeout setting.
+        """Получить таймаут загрузки изображений.
 
         Returns:
-            Load image timeout in seconds.
+            Таймаут в секундах.
 
         """
         return self.db.get_int(SettingsKey.LOAD_IMAGE_TIMEOUT, LOAD_IMAGE_TIMEOUT_DEFAULT)
 
     def set_load_image_timeout(self, timeout: int) -> None:
-        """Set load image timeout setting.
+        """Установить таймаут загрузки изображений.
 
         Args:
-            timeout: Load image timeout in seconds.
+            timeout: Таймаут в секундах.
 
         """
         self.db.set(SettingsKey.LOAD_IMAGE_TIMEOUT, value=timeout)
-        logger.debug(f"Load image timeout set to: {timeout} seconds")
+        logger.debug(f"Таймаут загрузки изображений: {timeout} сек")

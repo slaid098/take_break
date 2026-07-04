@@ -1,4 +1,4 @@
-"""Wallpaper management service."""
+"""Управление обоями для overlay."""
 
 import threading
 from pathlib import Path
@@ -10,7 +10,7 @@ from .getter.picsum import PicsumWallpaperGetter
 
 
 class WallpaperManager:
-    """Manages wallpaper loading and selection."""
+    """Управляет загрузкой и выбором обоев."""
 
     def __init__(
         self,
@@ -20,34 +20,36 @@ class WallpaperManager:
         cache_file_path: Path | None = None,
         local_folder_path: Path | None = None,
     ) -> None:
-        """Initialize the wallpaper manager.
+        """Инициализировать менеджер обоев.
 
         Args:
-            width: Screen width.
-            height: Screen height.
-            use_online: Whether to use online wallpapers.
-            cache_file_path: Path to the cache file.
-            local_folder_path: Path to the local folder.
+            width: Ширина экрана.
+            height: Высота экрана.
+            use_online: Использовать ли онлайн-обои.
+            cache_file_path: Путь к файлу кэша.
+            local_folder_path: Путь к локальной папке с обоями.
 
         """
         self._use_online = use_online
         self._local_getter = LocalWallpaperGetter(local_folder_path)
         self._picsum_getter = PicsumWallpaperGetter(width, height, cache_file_path)
-        self._wallpaper = self._set_initial_wallpaper()
+        self._lock = threading.Lock()
+        self._wallpaper: QPixmap | None = self._set_initial_wallpaper()
         self._fetch_wallpaper()
 
     def get_wallpaper(self) -> QPixmap | None:
-        """Get a random wallpaper.
+        """Получить текущие обои.
 
         Returns:
-            QPixmap with the wallpaper or None if failed.
+            QPixmap с обоями или None если не удалось загрузить.
 
         """
         self._fetch_wallpaper()
-        return self._wallpaper
+        with self._lock:
+            return self._wallpaper
 
     def _fetch_wallpaper(self) -> None:
-        """Fetch a wallpaper."""
+        """Загрузить обои в фоновом потоке."""
 
         def _fetch() -> None:
             if self._use_online:
@@ -55,19 +57,24 @@ class WallpaperManager:
             else:
                 path = self._local_getter.get_wallpaper()
 
-            if path:
-                self._wallpaper = QPixmap(str(path))
-            else:
-                self._wallpaper = None
+            pixmap = QPixmap(str(path)) if path else None
+
+            with self._lock:
+                self._wallpaper = pixmap
 
         threading.Thread(daemon=True, target=_fetch).start()
 
     def set_use_online(self, use_online: bool) -> None:
-        """Set whether to use online wallpapers."""
+        """Установить режим загрузки обоев.
+
+        Args:
+            use_online: True для онлайн-обоев, False для локальных.
+
+        """
         self._use_online = use_online
 
     def _set_initial_wallpaper(self) -> QPixmap | None:
-        """Set initial wallpaper from cache or local files."""
+        """Установить начальные обои из кэша или локальных файлов."""
         wallpaper: QPixmap | None = None
 
         if self._use_online and self._picsum_getter.cache_path.exists():
