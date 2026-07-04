@@ -105,7 +105,7 @@ ignore_missing_imports = true
 # ── pytest ────────────────────────────────────────────────────────────────
 
 [tool.pytest.ini_options]
-addopts = "--cov=src --cov-report=term-missing --cov-fail-under=25"
+addopts = "--cov=src --cov-report=term-missing --cov-fail-under=60"
 testpaths = ["tests"]
 
 # ── coverage ──────────────────────────────────────────────────────────────
