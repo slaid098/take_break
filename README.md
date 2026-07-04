@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://github.com/slaid098/take_break/blob/master/images/logo.png?raw=true" alt="Take Break" width="100"/>
   <h1>Take Break</h1>
-  <p><strong>Для организации эффективной работы и отдыха за ПК.</strong></p>
+  <p><strong>Циклический таймер для эффективной работы и отдыха за ПК.</strong></p>
   <p>
     <img src="https://img.shields.io/badge/ОС-Windows-blue" alt="Windows">
   </p>
@@ -17,7 +17,7 @@
 
 ## Возможности
 
-- Фокус на следующую сессию
+- Фиксированные интервалы работы, гибкий отдых
 - Два режима: Помодоро (25 мин) и Стандартный (45 мин)
 - Перерыв пропустить нельзя
 - Онлайн-обои при каждом перерыве
