@@ -8,6 +8,7 @@ from loguru import logger
 
 try:
     import winreg as _winreg
+
     winreg: Any = _winreg
 except ImportError:
     winreg: Any = None  # type: ignore[no-redef]
