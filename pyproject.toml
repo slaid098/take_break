@@ -17,7 +17,7 @@ classifiers = [
     "Topic :: Utilities",
 ]
 dependencies = [
-    "loguru>=0.7.2",
+    "loguru>=0.7.3",
     "pyside6>=6.6.1",
     "keyboard>=0.13.5",
     "pillow>=10.2.0",
