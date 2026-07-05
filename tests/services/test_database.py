@@ -1,5 +1,7 @@
 """Тесты базы данных настроек."""
 
+from pathlib import Path
+
 import pytest
 from src.constants.path import Files
 from src.db.db import Database
@@ -81,3 +83,27 @@ class TestDatabase:
         """close закрывает соединение без ошибок."""
         db.set("key", "value")
         db.close()
+
+
+class TestDatabaseFile:
+    """Тесты БД с реальным файлом на диске."""
+
+    def test_creates_parent_dir_if_missing(self, tmp_path: Path) -> None:
+        """Database создаёт родительскую директорию если её нет."""
+        db_path = tmp_path / "deep" / "nested" / "settings.db"
+        assert not db_path.parent.exists()
+
+        db = Database(db_path=db_path)
+
+        assert db_path.exists()
+        db.close()
+
+    def test_persists_data_across_connections(self, tmp_path: Path) -> None:
+        """Данные сохраняются между подключениями."""
+        db_path = tmp_path / "settings.db"
+
+        with Database(db_path=db_path) as db:
+            db.set("key", "value")
+
+        with Database(db_path=db_path) as db:
+            assert db.get("key") == "value"
