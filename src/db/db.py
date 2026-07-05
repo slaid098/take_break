@@ -24,6 +24,8 @@ class Database:
         if db_path is None:
             db_path = Files.SETTINGS_DB_PATH
         self.db_path = db_path
+        if str(db_path) != ":memory:":
+            Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self._connection: sqlite3.Connection = sqlite3.connect(
             str(db_path),
             check_same_thread=False,
