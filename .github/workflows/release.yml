@@ -24,7 +24,7 @@ jobs:
         run: |
           Compress-Archive -Path dist/take_break/* -DestinationPath dist/take_break.zip
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: dist/take_break.zip
           generate_release_notes: true
